@@ -1,3 +1,4 @@
+//ELEMTOS PROPIOS que se pueden reutilizar en toda la app
 import { MatPaginatorIntl } from '@angular/material/paginator';
 
 export function getSpanishPaginatorIntl() {
