@@ -27,10 +27,9 @@ export class AlumnosScreenComponent implements OnInit {
       this.dataSource.paginator = this.paginator;
     }
 
-
   constructor(
     public facadeService: FacadeService,
-    public maestrosService: AlumnosService,
+    public alumnosService: AlumnosService,
     private router: Router,
   ) { }
 
@@ -50,7 +49,7 @@ export class AlumnosScreenComponent implements OnInit {
   // Consumimos el servicio para obtener los alumnos
     //Obtener alumnos
     public obtenerAlumnos() {
-      this.maestrosService.obtenerListaAlumnos().subscribe(
+      this.alumnosService.obtenerListaAlumnos().subscribe(
         (response) => {
           this.lista_alumnos = response;
           console.log("Lista users: ", this.lista_alumnos);
@@ -61,7 +60,7 @@ export class AlumnosScreenComponent implements OnInit {
               usuario.last_name = usuario.user.last_name;
               usuario.email = usuario.user.email;
             });
-            console.log("Maestros: ", this.lista_alumnos);
+            console.log("Alumnos: ", this.lista_alumnos);
 
             this.dataSource = new MatTableDataSource<DatosAlumno>(this.lista_alumnos as DatosAlumno[]);
           }
@@ -82,8 +81,10 @@ export class AlumnosScreenComponent implements OnInit {
 }
 
 export interface DatosAlumno {
+  id: number;
   id_alumno: number;
-  nombre: string;
+  first_name: string;
+  last_name: string;
   email: string;
   matricula: string;
   fecha_nacimiento: Date;
