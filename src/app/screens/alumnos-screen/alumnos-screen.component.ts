@@ -35,6 +35,17 @@ export class AlumnosScreenComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.name_user = this.facadeService.getUserCompleteName();
+    this.rol = this.facadeService.getUserGroup();
+    //Validar que haya inicio de sesión
+    //Obtengo el token del login
+    this.token = this.facadeService.getSessionToken();
+    console.log("Token: ", this.token);
+    if(this.token == ""){
+      this.router.navigate(["/"]);
+    }
+    //Obtener maestros
+    this.obtenerAlumnos();
   }
   // Consumimos el servicio para obtener los alumnos
     //Obtener alumnos
