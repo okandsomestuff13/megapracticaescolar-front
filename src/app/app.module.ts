@@ -26,6 +26,8 @@ import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatSelectModule} from '@angular/material/select';
 import {MatTableModule} from '@angular/material/table';
+// Ordenamiento
+import { MatSortModule } from '@angular/material/sort';
 // Paginación
 import {MatPaginatorIntl, MatPaginatorModule} from '@angular/material/paginator';
 //Para el paginator en español
@@ -81,7 +83,8 @@ import { SidebarComponent } from './partials/sidebar/sidebar.component';
     MatSelectModule,
     MatSidenavModule,
     MatTableModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    MatSortModule,
   ],
   providers: [
     CookieService,

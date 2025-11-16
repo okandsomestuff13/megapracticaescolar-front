@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { AlumnosService } from 'src/app/services/alumnos.service';
@@ -18,14 +19,11 @@ export class AlumnosScreenComponent implements OnInit {
   public lista_alumnos: any[] = [];
 
   //Para la tabla
-  displayedColumns: string[] = ['id_alumno', 'nombre', "matricula",'email', 'fecha_nacimiento', 'curp', 'rfc', 'edad', 'telefono',"ocupacion", 'editar', 'eliminar'];
+  displayedColumns: string[] = ['matricula', 'nombre','apellidos','email', 'fecha_nacimiento', 'curp', 'rfc', 'edad', 'telefono',"ocupacion", 'editar', 'eliminar'];
   dataSource = new MatTableDataSource<DatosAlumno>(this.lista_alumnos as DatosAlumno []);
 
    @ViewChild(MatPaginator) paginator: MatPaginator;
-
-    ngAfterViewInit() {
-      this.dataSource.paginator = this.paginator;
-    }
+   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     public facadeService: FacadeService,
@@ -43,9 +41,15 @@ export class AlumnosScreenComponent implements OnInit {
     if(this.token == ""){
       this.router.navigate(["/"]);
     }
-    //Obtener maestros
+    //Obtener alumnos
     this.obtenerAlumnos();
   }
+
+  ngAfterViewInit() {
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+  }
+
   // Consumimos el servicio para obtener los alumnos
     //Obtener alumnos
     public obtenerAlumnos() {
@@ -63,6 +67,16 @@ export class AlumnosScreenComponent implements OnInit {
             console.log("Alumnos: ", this.lista_alumnos);
 
             this.dataSource = new MatTableDataSource<DatosAlumno>(this.lista_alumnos as DatosAlumno[]);
+
+            this.dataSource.paginator = this.paginator;
+            this.dataSource.sort = this.sort;
+            
+            //Configurar filtro para buscar por nombre
+            this.dataSource.filterPredicate = (data: DatosAlumno, filter: string) => {
+              const searchStr = filter.toLowerCase();
+              const nombreCompleto = `${data.first_name} ${data.last_name}`.toLowerCase();
+              return nombreCompleto.includes(searchStr);
+            };
           }
         }, (error) => {
           console.error("Error al obtener la lista de maestros: ", error);
@@ -70,6 +84,16 @@ export class AlumnosScreenComponent implements OnInit {
         }
       );
     }
+
+  public applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    // Volver a la primera página cuando se filtra
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
 
   public goEditar(idUser: number) {
     this.router.navigate(["registro-usuarios/alumnos/" + idUser]);

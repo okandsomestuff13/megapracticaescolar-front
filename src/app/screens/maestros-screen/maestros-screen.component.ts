@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { FacadeService } from 'src/app/services/facade.service';
@@ -18,13 +19,15 @@ export class MaestrosScreenComponent implements OnInit {
   public lista_maestros: any[] = [];
 
   //Para la tabla
-  displayedColumns: string[] = ['id_trabajador', 'nombre', 'email', 'fecha_nacimiento', 'telefono', 'rfc', 'cubiculo', 'area_investigacion', 'editar', 'eliminar'];
+  displayedColumns: string[] = ['id_trabajador', 'nombre','apellidos', 'email', 'fecha_nacimiento', 'telefono', 'rfc', 'cubiculo', 'area_investigacion', 'editar', 'eliminar'];
   dataSource = new MatTableDataSource<DatosUsuario>(this.lista_maestros as DatosUsuario[]);
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
   constructor(
@@ -64,6 +67,15 @@ export class MaestrosScreenComponent implements OnInit {
           console.log("Maestros: ", this.lista_maestros);
 
           this.dataSource = new MatTableDataSource<DatosUsuario>(this.lista_maestros as DatosUsuario[]);
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
+                      
+          //Configurar filtro para buscar por nombre            
+          this.dataSource.filterPredicate = (data: DatosUsuario, filter: string) => {
+            const searchStr = filter.toLowerCase();
+            const nombreCompleto = `${data.first_name} ${data.last_name}`.toLowerCase();
+            return nombreCompleto.includes(searchStr);
+          };
         }
       }, (error) => {
         console.error("Error al obtener la lista de maestros: ", error);
@@ -72,6 +84,15 @@ export class MaestrosScreenComponent implements OnInit {
     );
   }
 
+  public applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    // Volver a la primera página cuando se filtra
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
 
   public goEditar(idUser: number) {
     this.router.navigate(["registro-usuarios/maestros/" + idUser]);
