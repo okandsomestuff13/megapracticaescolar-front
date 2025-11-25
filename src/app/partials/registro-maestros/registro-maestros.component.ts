@@ -47,6 +47,9 @@ export class RegistroMaestrosComponent implements OnInit {
     {value: '9', nombre: 'Ingeniería de Software'},
     {value: '10', nombre: 'Administración de S.O.'},
   ];
+
+  public lista_materias: any[] = [];
+
   constructor(
     private router: Router,
     private location : Location,
@@ -56,11 +59,32 @@ export class RegistroMaestrosComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.maestro = this.maestrosService.esquemaMaestro();
+    /*this.maestro = this.maestrosService.esquemaMaestro();
     // Rol del usuario
     this.maestro.rol = this.rol;
 
-    console.log("Datos maestro: ", this.maestro);
+    console.log("Datos maestro: ", this.maestro);*/
+    //El primer if valida si existe un parámetro en la URL
+    if(this.activatedRoute.snapshot.params['id'] != undefined){
+      this.editar = true;
+      //Asignamos a nuestra variable global el valor del ID que viene por la URL
+      this.idUser = this.activatedRoute.snapshot.params['id'];
+      console.log("ID User: ", this.idUser);
+      //Al iniciar la vista asignamos los datos del user
+      this.maestro = this.datos_user;
+    }else{
+      // Va a registrar un nuevo administrador
+      this.maestro = this.maestrosService.esquemaMaestro();
+      this.maestro.rol = this.rol;
+      this.token = this.facadeService.getSessionToken();
+    }
+    //Imprimir datos en consola
+    console.log("Maestro: ", this.maestro);
+
+    // Asegurarse de que materias_json sea un array
+    /*if (!this.maestro.materias_json || !Array.isArray(this.maestro.materias_json)) {
+        this.maestro.materias_json = [];
+    }*/
   }
 
   public regresar(){
@@ -102,7 +126,28 @@ export class RegistroMaestrosComponent implements OnInit {
   }
 
   public actualizar(){
+    // Lógica para actualizar los datos de un maestro existente
+    // Validación de los datos
+    this.errors = {};
+    this.errors = this.maestrosService.validarMaestro(this.maestro, this.editar);
+    if(Object.keys(this.errors).length > 0){
+      return false;
+    }
 
+    // Ejecutar el servicio de actualización
+    this.maestrosService.actualizarMaestro(this.maestro).subscribe(
+      (response) => {
+        // Redirigir o mostrar mensaje de éxito
+        alert("Maestro actualizado exitosamente");
+        console.log("Maestro actualizado: ", response);
+        this.router.navigate(["maestros"]);
+      },
+      (error) => {
+        // Manejar errores de la API
+        alert("Error al actualizar maestro");
+        console.error("Error al actualizar maestro: ", error);
+      }
+    );
   }
 
   //Funciones para password
@@ -167,5 +212,6 @@ export class RegistroMaestrosComponent implements OnInit {
       return false;
     }
   }
+
 
 }

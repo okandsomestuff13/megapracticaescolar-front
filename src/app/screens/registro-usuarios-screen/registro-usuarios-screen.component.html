@@ -55,11 +55,9 @@
       <!-- Formularios (vistas) de cada usuario (inyección dinámica) -->
       <app-registro-admin *ngIf="isAdmin" [rol]="tipo_user" [datos_user]="user"></app-registro-admin>
 
-      <app-registro-alumnos *ngIf="isAlumno" [rol]="tipo_user"
-        [datos_user]="editar ? user : null"></app-registro-alumnos>
+      <app-registro-alumnos *ngIf="isAlumno" [rol]="tipo_user" [datos_user]="editar ? user : null"></app-registro-alumnos>
 
-      <app-registro-maestros *ngIf="isMaestro" [rol]="tipo_user"
-        [datos_user]="editar ? user : null"></app-registro-maestros>
+      <app-registro-maestros *ngIf="isMaestro" [rol]="tipo_user" [datos_user]="editar ? user : null"></app-registro-maestros>
 
     </div>
   </div>

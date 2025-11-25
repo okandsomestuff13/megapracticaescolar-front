@@ -145,6 +145,7 @@ export class AdministradoresService {
     return this.http.get<any>(`${environment.url_api}/admin/?id=${idAdmin}`, { headers });
   }
 
+  // Petición para actualizar un administrador
   public actualizarAdmin(data: any): Observable<any>{
     const token = this.facadeService.getSessionToken();
     let headers: HttpHeaders;
@@ -155,6 +156,32 @@ export class AdministradoresService {
       console.log("No se encontró el token del usuario");
     }
     return this.http.put<any>(`${environment.url_api}/admin/`, data, { headers });
+  }
+
+  // Petición para eliminar un administrador
+  public eliminarAdmin(idAdmin: number): Observable<any> {
+    const token = this.facadeService.getSessionToken();
+    let headers: HttpHeaders;
+    if (token) {
+      headers = new HttpHeaders({ 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token });
+    } else {
+      headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+      console.log("No se encontró el token del usuario");
+    }
+    return this.http.delete<any>(`${environment.url_api}/admin/?id=${idAdmin}`, { headers });
+  }
+
+  // Servicio para obtener el total de usuarios registrados por rol
+  public getTotalUsuarios(): Observable<any>{
+    const token = this.facadeService.getSessionToken();
+    let headers: HttpHeaders;
+    if (token) {
+      headers = new HttpHeaders({ 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token });
+    } else {
+      headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+      console.log("No se encontró el token del usuario");
+    }
+    return this.http.get<any>(`${environment.url_api}/total-usuarios/`, { headers });
   }
 
 }

@@ -4,6 +4,8 @@ import { Location } from '@angular/common';
 import { FacadeService } from 'src/app/services/facade.service';
 import { MatRadioChange } from '@angular/material/radio';
 import { AdministradoresService } from 'src/app/services/administradores.service';
+import { MaestrosService } from 'src/app/services/maestros.service';
+import { AlumnosService } from 'src/app/services/alumnos.service';
 
 @Component({
   selector: 'app-registro-usuarios-screen',
@@ -30,7 +32,9 @@ export class RegistroUsuariosScreenComponent implements OnInit {
     public activatedRoute: ActivatedRoute,
     private router: Router,
     public facadeService: FacadeService,
-    private administradoresService: AdministradoresService
+    private administradoresService: AdministradoresService,
+    private maestrosService: MaestrosService,
+    private alumnosService: AlumnosService
   ) { }
 
   ngOnInit(): void {
@@ -87,17 +91,65 @@ export class RegistroUsuariosScreenComponent implements OnInit {
           this.user.email = response.user?.email || response.email;
           this.user.tipo_usuario = this.rol;
           this.isAdmin = true;
+          this.isAlumno = false; 
+          this.isMaestro = false; 
+          this.tipo_user = this.rol; 
         }, (error) => {
           console.log("Error: ", error);
           alert("No se pudo obtener el administrador seleccionado");
         }
       );
     }else if(this.rol == "maestro"){
-      // TODO: Implementar lógica para obtener maestro por ID
-    }else if(this.rol == "alumno"){
-      // TODO: Implementar lógica para obtener alumno por ID
-    }
+      this.maestrosService.obtenerMaestroPorID(this.idUser).subscribe(
+        (response) => {
+          this.user = response;
+          console.log("Usuario original obtenido: ", this.user);
+          // Asignar datos, soportando respuesta plana o anidada
+          this.user.first_name = response.user?.first_name || response.first_name;
+          this.user.last_name = response.user?.last_name || response.last_name;
+          this.user.email = response.user?.email || response.email;
 
+          if (this.user.materias_json && typeof this.user.materias_json === 'string') {
+              try {
+                  this.user.materias_json = JSON.parse(this.user.materias_json);
+              } catch (e) {
+                  this.user.materias_json = [];
+              }
+          }
+          if (!Array.isArray(this.user.materias_json)) {
+              this.user.materias_json = [];
+          }
+
+          this.user.tipo_usuario = this.rol;
+          this.isAdmin = false;
+          this.isAlumno = false;
+          this.isMaestro = true;
+          this.tipo_user = this.rol; 
+        }, (error) => {
+          console.log("Error: ", error);
+          alert("No se pudo obtener el maestro seleccionado");
+        }
+      );
+    }else if(this.rol == "alumno"){
+      this.alumnosService.obtenerAlumnoPorID(this.idUser).subscribe(
+        (response) => {
+          this.user = response;
+          console.log("Usuario original obtenido: ", this.user);
+          // Asignar datos, soportando respuesta plana o anidada
+          this.user.first_name = response.user?.first_name || response.first_name;
+          this.user.last_name = response.user?.last_name || response.last_name;
+          this.user.email = response.user?.email || response.email;
+          this.user.tipo_usuario = this.rol;
+          this.isAdmin = false;
+          this.isMaestro = false;
+          this.isAlumno = true;
+          this.tipo_user = this.rol;
+        }, (error) => {
+          console.log("Error: ", error);
+          alert("No se pudo obtener el alumno seleccionado");
+        }
+      );
+    }
   }
 
   //Función para regresar a la pantalla anterior
